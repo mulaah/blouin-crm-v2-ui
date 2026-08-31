@@ -1,0 +1,57 @@
+/* À fusionner dans styles/globals.css — remplace les blocs .zellige-* existants. */
+
+:root {
+  --blouin-dark: #2C1810;
+  --blouin-gold: #C9A961;
+  --blouin-cream: #FAF6EE;
+  --blouin-line: #E7E1D6;
+}
+
+body {
+  background-color: var(--blouin-cream);
+  color: var(--blouin-dark);
+}
+
+::selection {
+  background-color: var(--blouin-gold);
+  color: var(--blouin-dark);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #F0EBE0; }
+::-webkit-scrollbar-thumb { background: #C9BFAE; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--blouin-gold); }
+
+/* Motif zellige — 120 px, conforme aux planches */
+.zellige-light {
+  background-color: #FAF6EE;
+  background-image: url('/patterns/zellige-light-soft.svg');
+  background-size: 120px 120px;
+  background-repeat: repeat;
+}
+
+.zellige-dark {
+  background-color: #2C1810;
+  background-image: url('/patterns/zellige-dark-soft.svg');
+  background-size: 120px 120px;
+  background-repeat: repeat;
+}
+
+/* Étiquette de champ : capitales espacées, récurrente sur les trois écrans */
+.eyebrow {
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7A6E62;
+}
+
+/* Chiffres alignés dans les tableaux de montants */
+.tnum { font-variant-numeric: tabular-nums; }
+
+@layer utilities {
+  .focus-ring {
+    @apply outline-none ring-2 ring-offset-2 ring-blouin-gold;
+  }
+}

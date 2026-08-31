@@ -1,6 +1,6 @@
-import type { Config } from 'tailwindcss'
-
-const tokens = {
+// À fusionner dans theme.extend de tailwind.config.js.
+// Remplace le bloc colors.blouin existant (#C4A35A -> #C9A961, charte des slides).
+module.exports = {
   colors: {
     blouin: {
       dark: '#2C1810',
@@ -30,18 +30,4 @@ const tokens = {
     poppins: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
     inter: ['var(--font-inter)', 'system-ui', 'sans-serif'],
   },
-}
-
-const config: Config = {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './lib/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: tokens,
-  },
-  plugins: [],
-}
-
-export default config
+};
