@@ -11,7 +11,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-            <Link href="/propositions">
+            <Link href="/internal/prospects">
               <div className="block p-8 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
                 <div className="text-2xl font-bold text-blue-600 mb-2">📋</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Propositions</h2>
