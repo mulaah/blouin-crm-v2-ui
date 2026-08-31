@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react'
 
 interface Prospect {
   id: string
-  name: string
-  program?: string
-  advocate?: string
+  first_name?: string
+  last_name?: string
+  program_label?: string
+  program_code?: string
+  email?: string
+  phone?: string
+  type_dossier_label?: string
+  derniere_consultation_paiement_statut?: string
   consultation_count?: number
   amount?: number
-  status?: string
 }
 
 export default function ProspectsTable() {
@@ -25,7 +29,8 @@ export default function ProspectsTable() {
       try {
         const response = await fetch('/api/internal/prospects')
         const data = await response.json()
-        setProspects(data)
+        const prospectsList = Array.isArray(data) ? data : data.data || []
+        setProspects(prospectsList)
       } catch (error) {
         console.error('Failed to fetch prospects:', error)
       } finally {
@@ -37,11 +42,13 @@ export default function ProspectsTable() {
   }, [])
 
   const filteredProspects = prospects.filter(prospect => {
+    const fullName = `${prospect.first_name || ''} ${prospect.last_name || ''}`.toLowerCase()
     const matchesSearch = !searchTerm ||
-      prospect.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesProgram = filterProgram === 'tous' || prospect.program === filterProgram
-    const matchesStatus = filterStatus === 'tous' || prospect.status === filterStatus
-    const matchesAdvocate = filterAdvocate === 'tous' || prospect.advocate === filterAdvocate
+      fullName.includes(searchTerm.toLowerCase()) ||
+      prospect.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesProgram = filterProgram === 'tous' || prospect.program_code === filterProgram
+    const matchesStatus = filterStatus === 'tous' || prospect.derniere_consultation_paiement_statut === filterStatus
+    const matchesAdvocate = filterAdvocate === 'tous' // Advocate filtering would need additional data
 
     return matchesSearch && matchesProgram && matchesStatus && matchesAdvocate
   })
@@ -74,8 +81,13 @@ export default function ProspectsTable() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="tous">tous</option>
-              <option value="PR">PR</option>
-              <option value="IEC">IEC</option>
+              <option value="di_express_entry">DI / Express Entry</option>
+              <option value="peq">PEQ</option>
+              <option value="residence_permanente">Résidence Permanente</option>
+              <option value="csq">CSQ</option>
+              <option value="permis_travail_ferme">Permis de Travail Fermé</option>
+              <option value="permis_etudes">Permis d'Études</option>
+              <option value="visa_visiteur">Visa Visiteur</option>
             </select>
           </div>
           <div>
@@ -88,9 +100,8 @@ export default function ProspectsTable() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="tous">tous</option>
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="closed">Closed</option>
+              <option value="paid">Payé</option>
+              <option value="pending">En attente</option>
             </select>
           </div>
           <div>
@@ -147,23 +158,25 @@ export default function ProspectsTable() {
               filteredProspects.map((prospect) => (
                 <tr key={prospect.id} className="border-b border-gray-200 hover:bg-gray-50">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">{prospect.name}</div>
-                    <div className="text-sm text-gray-500">{prospect.id}</div>
+                    <div className="font-medium text-gray-900">
+                      {prospect.first_name} {prospect.last_name}
+                    </div>
+                    <div className="text-sm text-gray-500">{prospect.email}</div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {prospect.program || '-'}
+                    {prospect.program_label || '-'}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {prospect.advocate || '-'}
+                    {prospect.type_dossier_label || '-'}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {prospect.consultation_count || 0}
+                    {prospect.consultation_count || '-'}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {prospect.amount ? `$${prospect.amount.toLocaleString()}` : '-'}
                   </td>
                   <td className="px-6 py-4">
-                    <StatusBadge status={prospect.status || 'pending'} />
+                    <StatusBadge status={prospect.derniere_consultation_paiement_statut || 'pending'} />
                   </td>
                 </tr>
               ))
@@ -177,10 +190,8 @@ export default function ProspectsTable() {
 
 function StatusBadge({ status }: { status: string }) {
   const statusMap = {
-    active: { bg: 'bg-green-100', text: 'text-green-800', label: 'Acceptée' },
-    pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'En préparation' },
-    closed: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Fermée' },
-    to_follow: { bg: 'bg-orange-100', text: 'text-orange-800', label: 'À relancer' },
+    paid: { bg: 'bg-green-100', text: 'text-green-800', label: 'Payé' },
+    pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'En attente' },
   } as const
 
   const style = statusMap[status as keyof typeof statusMap] || statusMap.pending
